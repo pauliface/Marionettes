@@ -16,14 +16,24 @@ local function createDogMarionette(config: DogConfig)
 	local LL = config.LegLength
 	local SL = config.SnoutLength
 
-	-- Place in front of the camera
+	-- Find ground level from the Baseplate (fall back to standard Y=0.5)
+	local groundY = 0.5
+	local baseplate = workspace:FindFirstChild("Baseplate")
+	if baseplate and baseplate:IsA("BasePart") then
+		groundY = baseplate.Position.Y + baseplate.Size.Y / 2
+	end
+
+	-- Place in front of the camera.
+	-- OY is chosen so paw bottoms are exactly 1 stud above the ground:
+	--   paw_bottom = OY - S*(2 + 7.5*LL)  =>  OY = groundY + 1 + S*(2 + 7.5*LL)
 	local camera = workspace.CurrentCamera
-	local OX, OY, OZ = 0, 25, 0
+	local OX, OZ = 0, 0
 	if camera then
 		local target = camera.CFrame * CFrame.new(0, 0, -25)
 		OX = target.Position.X
 		OZ = target.Position.Z
 	end
+	local OY = groundY + 1 + S * (2 + 7.5 * LL)
 
 	local recording = ChangeHistoryService:TryBeginRecording("Create Dog Marionette")
 
