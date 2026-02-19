@@ -124,6 +124,10 @@ local function createDogMarionette(config: DogConfig)
 	local head = mkPart("Head", Vector3.new(3.5*S, 3.5*S, 3*S), headPos, config.HeadColor)
 	mkDrag(head)
 
+	local clickDetector = Instance.new("ClickDetector")
+	clickDetector.MaxActivationDistance = 1000
+	clickDetector.Parent = head
+
 	-- Snout (welded to head; center at head front + half-snout-z)
 	-- Head front face: headPos.Z + 1.5*S = OZ + 7*S
 	local snoutHalfZ = 1.25 * S * SL
@@ -237,6 +241,35 @@ local function createDogMarionette(config: DogConfig)
 	ropeBetween("FRKneeRope", lhFR, frKR, legHdl)
 	ropeBetween("BLKneeRope", lhBL, blKR, legHdl)
 	ropeBetween("BRKneeRope", lhBR, brKR, legHdl)
+
+	-- Bullet shooting script (active in play mode)
+	local shootScript = Instance.new("Script")
+	shootScript.Name = "ShootBullets"
+	shootScript.Source = [[
+local folder = script.Parent
+local head = folder:WaitForChild("Head")
+local snout = folder:WaitForChild("Snout")
+local clickDetector = head:WaitForChild("ClickDetector")
+local Debris = game:GetService("Debris")
+
+clickDetector.MouseClick:Connect(function()
+	local fireDir = -snout.CFrame.LookVector
+	local spawnPos = snout.Position + fireDir * (snout.Size.Z / 2 + 0.3)
+
+	local bullet = Instance.new("Part")
+	bullet.Name = "Bullet"
+	bullet.Shape = Enum.PartType.Ball
+	bullet.Size = Vector3.new(0.4, 0.4, 0.4)
+	bullet.Color = Color3.fromRGB(255, 200, 0)
+	bullet.Material = Enum.Material.Neon
+	bullet.CanCollide = true
+	bullet.CFrame = CFrame.new(spawnPos)
+	bullet.Parent = workspace
+	bullet.AssemblyLinearVelocity = fireDir * 80
+	Debris:AddItem(bullet, 3)
+end)
+]]
+	shootScript.Parent = folder
 
 	if recording then
 		ChangeHistoryService:FinishRecording(recording, Enum.FinishRecordingOperation.Commit)
