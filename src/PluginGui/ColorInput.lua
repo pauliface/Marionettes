@@ -6,7 +6,7 @@ local React = require(Packages.React)
 local e = React.createElement
 
 local Colors = require("./Colors")
-local NumberInput = require("./NumberInput")
+local LabeledSlider = require("./LabeledSlider")
 
 local function ColorInput(props: {
 	Label: string,
@@ -18,10 +18,6 @@ local function ColorInput(props: {
 	local g = math.round(props.Color.G * 255)
 	local b = math.round(props.Color.B * 255)
 
-	local function clamp(v: number): number
-		return math.max(0, math.min(255, math.round(v)))
-	end
-
 	return e("Frame", {
 		Size = UDim2.fromScale(1, 0),
 		AutomaticSize = Enum.AutomaticSize.Y,
@@ -30,7 +26,7 @@ local function ColorInput(props: {
 	}, {
 		ListLayout = e("UIListLayout", {
 			SortOrder = Enum.SortOrder.LayoutOrder,
-			Padding = UDim.new(0, 3),
+			Padding = UDim.new(0, 4),
 		}),
 		-- Label row with color swatch
 		Header = e("Frame", {
@@ -64,54 +60,33 @@ local function ColorInput(props: {
 				Stroke = e("UIStroke", { Color = Colors.OFFWHITE, Thickness = 1 }),
 			}),
 		}),
-		-- R G B input row
-		Inputs = e("Frame", {
-			Size = UDim2.fromScale(1, 0),
-			AutomaticSize = Enum.AutomaticSize.Y,
-			BackgroundTransparency = 1,
+		-- R G B sliders
+		RSlider = e(LabeledSlider, {
+			Label = "R",
+			Value = r,
+			FillColor = Color3.fromRGB(220, 60, 60),
+			OnValueChanged = function(v: number)
+				props.OnColorChanged(Color3.new(v / 255, props.Color.G, props.Color.B))
+			end,
 			LayoutOrder = 2,
-		}, {
-			ListLayout = e("UIListLayout", {
-				FillDirection = Enum.FillDirection.Horizontal,
-				SortOrder = Enum.SortOrder.LayoutOrder,
-				Padding = UDim.new(0, 3),
-			}),
-			RInput = e(NumberInput, {
-				Label = "R",
-				Value = r,
-				ChipColor = Color3.fromRGB(220, 60, 60),
-				Grow = true,
-				ValueEntered = function(v: number)
-					local clamped = clamp(v)
-					props.OnColorChanged(Color3.new(clamped / 255, props.Color.G, props.Color.B))
-					return clamped
-				end,
-				LayoutOrder = 1,
-			}),
-			GInput = e(NumberInput, {
-				Label = "G",
-				Value = g,
-				ChipColor = Color3.fromRGB(60, 200, 60),
-				Grow = true,
-				ValueEntered = function(v: number)
-					local clamped = clamp(v)
-					props.OnColorChanged(Color3.new(props.Color.R, clamped / 255, props.Color.B))
-					return clamped
-				end,
-				LayoutOrder = 2,
-			}),
-			BInput = e(NumberInput, {
-				Label = "B",
-				Value = b,
-				ChipColor = Color3.fromRGB(60, 60, 220),
-				Grow = true,
-				ValueEntered = function(v: number)
-					local clamped = clamp(v)
-					props.OnColorChanged(Color3.new(props.Color.R, props.Color.G, clamped / 255))
-					return clamped
-				end,
-				LayoutOrder = 3,
-			}),
+		}),
+		GSlider = e(LabeledSlider, {
+			Label = "G",
+			Value = g,
+			FillColor = Color3.fromRGB(60, 200, 60),
+			OnValueChanged = function(v: number)
+				props.OnColorChanged(Color3.new(props.Color.R, v / 255, props.Color.B))
+			end,
+			LayoutOrder = 3,
+		}),
+		BSlider = e(LabeledSlider, {
+			Label = "B",
+			Value = b,
+			FillColor = Color3.fromRGB(60, 60, 220),
+			OnValueChanged = function(v: number)
+				props.OnColorChanged(Color3.new(props.Color.R, props.Color.G, v / 255))
+			end,
+			LayoutOrder = 4,
 		}),
 	})
 end

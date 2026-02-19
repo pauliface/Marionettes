@@ -36,7 +36,7 @@ local function DogMarionetteGui(props: {
 		ScrollBarImageColor3 = Colors.OFFWHITE,
 		ScrollingDirection = Enum.ScrollingDirection.Y,
 		CanvasSize = UDim2.fromScale(1, 0),
-		AutomaticCanvasSize = Enum.AutomaticCanvasSize.Y,
+		AutomaticCanvasSize = Enum.AutomaticSize.Y,
 	}, {
 		ListLayout = e("UIListLayout", {
 			SortOrder = Enum.SortOrder.LayoutOrder,
