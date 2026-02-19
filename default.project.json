@@ -1,5 +1,5 @@
 {
-	"name": "DogMarionette v1.0",
+	"name": "DogMarionette",
 	"globIgnorePaths": [
 		"**/*.spec.lua"
 	],
