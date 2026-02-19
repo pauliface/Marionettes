@@ -124,10 +124,6 @@ local function createDogMarionette(config: DogConfig)
 	local head = mkPart("Head", Vector3.new(3.5*S, 3.5*S, 3*S), headPos, config.HeadColor)
 	mkDrag(head)
 
-	local clickDetector = Instance.new("ClickDetector")
-	clickDetector.MaxActivationDistance = 1000
-	clickDetector.Parent = head
-
 	-- Snout (welded to head; center at head front + half-snout-z)
 	-- Head front face: headPos.Z + 1.5*S = OZ + 7*S
 	local snoutHalfZ = 1.25 * S * SL
@@ -249,10 +245,10 @@ local function createDogMarionette(config: DogConfig)
 local folder = script.Parent
 local head = folder:WaitForChild("Head")
 local snout = folder:WaitForChild("Snout")
-local clickDetector = head:WaitForChild("ClickDetector")
+local dragDetector = head:WaitForChild("DragDetector")
 local Debris = game:GetService("Debris")
 
-clickDetector.MouseClick:Connect(function()
+dragDetector.DragStart:Connect(function()
 	local fireDir = -snout.CFrame.LookVector
 	local spawnPos = snout.Position + fireDir * (snout.Size.Z / 2 + 0.3)
 
