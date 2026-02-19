@@ -262,6 +262,53 @@ dragDetector.DragStart:Connect(function()
 	bullet.CFrame = CFrame.new(spawnPos)
 	bullet.Parent = workspace
 	bullet.AssemblyLinearVelocity = fireDir * 80
+
+	-- Trail ribbon
+	local att0 = Instance.new("Attachment")
+	att0.Position = Vector3.new(0, 0.2, 0)
+	att0.Parent = bullet
+	local att1 = Instance.new("Attachment")
+	att1.Position = Vector3.new(0, -0.2, 0)
+	att1.Parent = bullet
+	local trail = Instance.new("Trail")
+	trail.Attachment0 = att0
+	trail.Attachment1 = att1
+	trail.Lifetime = 0.3
+	trail.MinLength = 0
+	trail.FaceCamera = true
+	trail.LightEmission = 1
+	trail.Color = ColorSequence.new({
+		ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 180)),
+		ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 80, 0)),
+	})
+	trail.Transparency = NumberSequence.new({
+		NumberSequenceKeypoint.new(0, 0),
+		NumberSequenceKeypoint.new(1, 1),
+	})
+	trail.Parent = bullet
+
+	-- Spark particles
+	local emitter = Instance.new("ParticleEmitter")
+	emitter.Color = ColorSequence.new({
+		ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 180)),
+		ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 80, 0)),
+	})
+	emitter.LightEmission = 1
+	emitter.LightInfluence = 0
+	emitter.Size = NumberSequence.new({
+		NumberSequenceKeypoint.new(0, 0.15),
+		NumberSequenceKeypoint.new(1, 0),
+	})
+	emitter.Transparency = NumberSequence.new({
+		NumberSequenceKeypoint.new(0, 0),
+		NumberSequenceKeypoint.new(1, 1),
+	})
+	emitter.Lifetime = NumberRange.new(0.1, 0.25)
+	emitter.Rate = 80
+	emitter.SpreadAngle = Vector2.new(20, 20)
+	emitter.Speed = NumberRange.new(1, 4)
+	emitter.Parent = bullet
+
 	Debris:AddItem(bullet, 3)
 end)
 ]]
