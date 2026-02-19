@@ -1,5 +1,6 @@
 --!strict
 local ChangeHistoryService = game:GetService("ChangeHistoryService")
+local PhysicsService = game:GetService("PhysicsService")
 
 export type DogConfig = {
 	HeadColor: Color3,
@@ -35,6 +36,16 @@ local function createDogMarionette(config: DogConfig)
 	end
 	local OY = groundY + 1 + S * (2 + 7.5 * LL)
 
+	-- Ensure a collision group exists for dog parts so they collide with the
+	-- floor/environment but never fight each other at joints.
+	local DOG_GROUP = "DogParts"
+	pcall(function()
+		PhysicsService:RegisterCollisionGroup(DOG_GROUP)
+	end)
+	pcall(function()
+		PhysicsService:CollisionGroupSetCollidable(DOG_GROUP, DOG_GROUP, false)
+	end)
+
 	local recording = ChangeHistoryService:TryBeginRecording("Create Dog Marionette")
 
 	local folder = Instance.new("Folder")
@@ -49,7 +60,10 @@ local function createDogMarionette(config: DogConfig)
 		p.Color = color
 		p.Material = Enum.Material.SmoothPlastic
 		p.Anchored = anchored == true
-		p.CanCollide = false
+		p.CanCollide = anchored ~= true
+		if anchored ~= true then
+			p.CollisionGroup = DOG_GROUP
+		end
 		p.Parent = folder
 		return p
 	end
